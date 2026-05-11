@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.db
+data/*/*.json
+data/*/index.json
+static/cv_output.pdf
+.env

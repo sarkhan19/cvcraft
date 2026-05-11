@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="{{ data.meta.lang or 'en' }}">
+<head>
+  <link rel="preload" href="/static/bg.jpg" as="image">
+  <style>
+    html { background: #5a9e4a; }
+  </style>
+  <script>
+    // Apply wallpaper as soon as image is ready — no flash
+    var _bg = new Image();
+    _bg.src = '/static/bg.jpg';
+    _bg.onload = function() {
+      document.documentElement.style.backgroundImage = "url('/static/bg.jpg')";
+      document.documentElement.style.backgroundSize = "cover";
+      document.documentElement.style.backgroundPosition = "center";
+      document.documentElement.style.backgroundAttachment = "fixed";
+    };
+  </script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ data.personal.name or 'CV' }} — CVcraft</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --acc:{{ data.meta.color or '#2f6b4f' }};
+    --bg:#f9f8f6;--ink:#1c1c1c;--muted:#8a8780;--border:#e4e0d8;--card:#fff;
+    --pill:color-mix(in srgb, var(--acc) 10%, white);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:transparent;color:var(--ink);min-height:100vh;
+    background-image:url('/static/bg.jpg');background-size:cover;background-attachment:fixed;background-position:center;}
+  .wrap{background:rgba(249,248,246,0.92);border-radius:16px;margin-top:1rem;margin-bottom:1rem;}
+  nav{background:rgba(28,28,28,0.97);}
+  nav{background:rgba(15,15,15,.95);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100;}
+  .logo{display:flex;align-items:center;gap:.45rem;text-decoration:none;flex-shrink:0;}
+  .logo span{color:#c8a155;}
+  .nav-btns{display:flex;gap:.5rem;}
+  .nbtn{display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .85rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;transition:all .18s;}
+  .nbtn-ghost{color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.2);}
+  .nbtn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+  .nbtn-acc{background:var(--acc);color:#fff;}
+  .nbtn-acc:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .flash{background:#edf7f0;border-left:3px solid var(--acc);color:#1e5437;padding:.7rem 2rem;font-size:.84rem;}
+  .wrap{max-width:820px;margin:0 auto;padding:2.2rem 1.5rem 5rem;}
+
+  /* HERO */
+  .hero{border-radius:14px;padding:2.5rem 2.5rem 2rem;margin-bottom:1.3rem;position:relative;overflow:hidden;}
+  .hero-modern{background:var(--ink);}
+  .hero-minimal,.hero-undefined{background:var(--card);border:1px solid var(--border);}
+  .hero-modern .hero-name{color:#fff;}
+  .hero-minimal .hero-name,.hero-undefined .hero-name{color:var(--ink);}
+  .hero-name{font-family:'DM Sans',sans-serif;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.1;margin-bottom:.3rem;}
+  .hero-title-modern{color:color-mix(in srgb,var(--acc) 80%,white);font-size:.85rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem;}
+  .hero-title-other{color:var(--acc);font-size:.85rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem;}
+  .hero-rule{height:2px;background:var(--acc);margin-bottom:1.2rem;}
+  .contacts{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem;}
+  .c-item{display:flex;align-items:center;gap:.35rem;font-size:.76rem;}
+  .c-modern{color:rgba(255,255,255,.55);}
+  .c-other{color:var(--muted);}
+  .hero-photo{width:72px;height:72px;border-radius:50%;object-fit:cover;float:right;margin-left:1rem;border:3px solid rgba(255,255,255,.2);}
+
+  /* CARD */
+  .card{background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:11px;padding:1.8rem 2rem;margin-bottom:1.2rem;}
+  .clabel{font-size:.65rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:.55rem;margin-bottom:1.2rem;}
+  .clabel::after{content:'';flex:1;height:1px;background:var(--border);}
+  .clabel-minimal{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#aaa;margin-bottom:.8rem;}
+
+  .summary{font-size:.9rem;line-height:1.82;color:#555;}
+  .tl-item{padding:0 0 1.4rem 1.1rem;border-left:2px solid var(--border);position:relative;}
+  .tl-item:last-child{padding-bottom:0;border-left-color:transparent;}
+  .tl-item::before{content:'';position:absolute;left:-5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--acc);border:2px solid var(--card);box-shadow:0 0 0 2px var(--acc);}
+  .tl-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.3rem;}
+  .tl-company{font-weight:700;font-size:.94rem;}
+  .tl-date{font-size:.7rem;color:var(--muted);background:var(--bg);padding:.18rem .55rem;border-radius:20px;white-space:nowrap;}
+  .tl-pos{font-size:.8rem;color:var(--acc);font-weight:600;margin:.2rem 0 .4rem;}
+  .tl-desc{font-size:.83rem;line-height:1.7;color:#666;}
+  .edu-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;padding:.75rem 0;border-bottom:1px solid var(--border);}
+  .edu-row:last-child{border-bottom:none;}
+  .edu-inst{font-weight:700;font-size:.9rem;}
+  .edu-deg{font-size:.8rem;color:var(--muted);margin-top:.15rem;}
+  .edu-dates{font-size:.7rem;color:var(--muted);background:var(--bg);padding:.18rem .55rem;border-radius:20px;}
+  .edu-gpa{font-size:.7rem;color:var(--acc);font-weight:700;margin-top:.3rem;text-align:right;}
+  .sg{margin-bottom:.9rem;}
+  .sg-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem;}
+  .tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+  .tag{background:var(--pill);border:1px solid color-mix(in srgb,var(--acc) 25%,white);color:color-mix(in srgb,var(--acc) 80%,black);font-size:.76rem;font-weight:500;padding:.26rem .65rem;border-radius:4px;transition:all .15s;}
+  .tag:hover{background:var(--acc);color:#fff;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .lang-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+  .lang-row:last-child{border-bottom:none;}
+  .lang-name{font-weight:600;}
+  .lang-lvl{font-size:.68rem;font-weight:700;color:var(--acc);background:var(--pill);padding:.15rem .5rem;border-radius:3px;}
+  .cert-row{padding:.6rem 0;border-bottom:1px solid var(--border);}
+  .cert-row:last-child{border-bottom:none;}
+  .cert-name{font-weight:600;font-size:.84rem;}
+  .cert-meta{font-size:.72rem;color:var(--muted);margin-top:.1rem;}
+
+  /* SHARE BANNER */
+  .share-banner{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.3rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+  .share-url{font-size:.8rem;color:var(--acc);word-break:break-all;}
+  .copy-btn{padding:.3rem .8rem;border-radius:5px;border:1px solid var(--border);background:none;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;}
+  .copy-btn:hover{background:var(--bg);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo" style="text-decoration:none;" style="display:flex;align-items:center;gap:.5rem;"><svg width="26" height="26" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <rect width="16" height="16" fill="#3eaf3e"/>
+      <rect x="2" y="2" width="4" height="4" fill="#1a1a1a"/>
+      <rect x="10" y="2" width="4" height="4" fill="#1a1a1a"/>
+      <rect x="5" y="7" width="6" height="2" fill="#1a1a1a"/>
+      <rect x="5" y="9" width="2" height="3" fill="#1a1a1a"/>
+      <rect x="9" y="9" width="2" height="3" fill="#1a1a1a"/>
+      <rect x="4" y="12" width="3" height="2" fill="#1a1a1a"/>
+      <rect x="9" y="12" width="3" height="2" fill="#1a1a1a"/>
+    </svg>
+    <span style="font-family:'Press Start 2P',monospace;color:#fff;font-size:.68rem;letter-spacing:.01em;">cvcraft</span>
+  </a>
+  {% if owner %}
+  <div class="nav-btns">
+    <a href="/" class="nbtn nbtn-ghost">← Dashboard</a>
+    <a href="/cv/{{ cv_id }}/edit" class="nbtn nbtn-ghost">✏ Edit</a>
+    <a href="/cv/{{ cv_id }}/download" class="nbtn nbtn-acc">↓ PDF</a>
+  </div>
+  {% endif %}
+</nav>
+
+{% with messages = get_flashed_messages() %}
+  {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+{% endwith %}
+
+{% set tpl = data.meta.template or 'modern' %}
+{% set lang = data.meta.lang or 'en' %}
+
+<div class="wrap">
+
+  {% if owner and data.meta.public %}
+  <div class="share-banner">
+    <span style="font-size:.82rem;font-weight:600;">🔗 Public link:</span>
+    <span class="share-url" id="share-url">{{ request.host_url }}share/{{ cv_id }}</span>
+    <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('share-url').innerText);this.textContent='Copied!'">Copy</button>
+  </div>
+  {% endif %}
+
+  <!-- HERO -->
+  <div class="hero hero-{{ tpl }}">
+    {% if data.meta.photo %}
+    <img src="{{ data.meta.photo }}" class="hero-photo" alt="photo">
+    {% endif %}
+    <div class="hero-name">{{ data.personal.name }}</div>
+    {% if data.personal.title %}
+    <div class="{{ 'hero-title-modern' if tpl == 'modern' else 'hero-title-other' }}">{{ data.personal.title }}</div>
+    {% endif %}
+    {% if tpl != 'modern' %}<div class="hero-rule"></div>{% endif %}
+    <div class="contacts">
+      {% if data.personal.email %}<div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">✉ {{ data.personal.email }}</div>{% endif %}
+      {% if data.personal.phone %}<div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">☎ {{ data.personal.phone }}</div>{% endif %}
+      {% if data.personal.location %}<div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">⌖ {{ data.personal.location }}</div>{% endif %}
+      {% if data.personal.linkedin %}<div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">{{ data.personal.linkedin }}</div>{% endif %}
+      {% if data.personal.github %}<div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">{% if data.personal.get('website_name') %}{{ data.personal.website_name }}: {% endif %}{{ data.personal.github }}</div>{% endif %}
+      {% if data.personal.get('website_url') %}
+      <div class="c-item {{ 'c-modern' if tpl=='modern' else 'c-other' }}">
+        🔗 <a href="{{ data.personal.website_url }}" target="_blank"
+              style="color:inherit;text-decoration:none;">
+          {{ data.personal.get('website_name') or data.personal.website_url }}
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% macro section_label(title) %}
+    {% if tpl == 'minimal' %}<div class="clabel-minimal">{{ title|upper }}</div>
+    {% else %}<div class="clabel">{{ title }}</div>{% endif %}
+  {% endmacro %}
+
+  {% set labels = {
+    'en':  {'profile':'Profile','experience':'Experience','education':'Education','skills':'Skills','tech':'Technical','soft':'Soft Skills','languages':'Languages','certs':'Certifications'},
+    'tr':  {'profile':'Profil','experience':'Deneyim','education':'Eğitim','skills':'Beceriler','tech':'Teknik','soft':'Kişisel Beceriler','languages':'Diller','certs':'Sertifikalar'},
+    'de':  {'profile':'Profil','experience':'Berufserfahrung','education':'Ausbildung','skills':'Fähigkeiten','tech':'Technisch','soft':'Soft Skills','languages':'Sprachen','certs':'Zertifikate'},
+    'fr':  {'profile':'Profil','experience':'Expérience','education':'Formation','skills':'Compétences','tech':'Technique','soft':'Savoir-être','languages':'Langues','certs':'Certifications'},
+    'es':  {'profile':'Perfil','experience':'Experiencia','education':'Educación','skills':'Habilidades','tech':'Técnicas','soft':'Habilidades Blandas','languages':'Idiomas','certs':'Certificaciones'},
+    'pt':  {'profile':'Perfil','experience':'Experiência','education':'Educação','skills':'Habilidades','tech':'Técnicas','soft':'Interpessoais','languages':'Idiomas','certs':'Certificações'},
+    'it':  {'profile':'Profilo','experience':'Esperienza','education':'Istruzione','skills':'Competenze','tech':'Tecniche','soft':'Trasversali','languages':'Lingue','certs':'Certificazioni'},
+    'ru':  {'profile':'Профиль','experience':'Опыт','education':'Образование','skills':'Навыки','tech':'Технические','soft':'Личные','languages':'Языки','certs':'Сертификаты'},
+    'zh':  {'profile':'简介','experience':'工作经验','education':'教育背景','skills':'技能','tech':'专业技能','soft':'软技能','languages':'语言','certs':'证书'},
+    'ja':  {'profile':'プロフィール','experience':'職歴','education':'学歴','skills':'スキル','tech':'技術','soft':'ソフトスキル','languages':'言語','certs':'資格'},
+    'ko':  {'profile':'프로필','experience':'경력','education':'학력','skills':'기술','tech':'기술','soft':'소프트 스킬','languages':'언어','certs':'자격증'},
+    'ar':  {'profile':'الملف','experience':'الخبرة','education':'التعليم','skills':'المهارات','tech':'تقنية','soft':'شخصية','languages':'اللغات','certs':'الشهادات'},
+    'hi':  {'profile':'प्रोफाइल','experience':'अनुभव','education':'शिक्षा','skills':'कौशल','tech':'तकनीकी','soft':'व्यक्तिगत','languages':'भाषाएं','certs':'प्रमाणपत्र'},
+    'bn':  {'profile':'প্রোফাইল','experience':'অভিজ্ঞতা','education':'শিক্ষা','skills':'দক্ষতা','tech':'প্রযুক্তিগত','soft':'ব্যক্তিগত','languages':'ভাষা','certs':'সনদপত্র'},
+    'ur':  {'profile':'پروفائل','experience':'تجربہ','education':'تعلیم','skills':'مہارتیں','tech':'تکنیکی','soft':'ذاتی','languages':'زبانیں','certs':'سرٹیفکیٹ'},
+    'vi':  {'profile':'Hồ sơ','experience':'Kinh nghiệm','education':'Học vấn','skills':'Kỹ năng','tech':'Kỹ thuật','soft':'Kỹ năng mềm','languages':'Ngôn ngữ','certs':'Chứng chỉ'},
+  } %}
+  {% set L = labels.get(lang, labels['en']) %}
+
+  {% if data.personal.summary %}
+  <div class="card"><div>{{ section_label(L.profile) }}</div><p class="summary">{{ data.personal.summary }}</p></div>
+  {% endif %}
+
+  {% if data.experience %}
+  <div class="card">
+    {{ section_label(L.experience) }}
+    {% for e in data.experience %}
+    <div class="tl-item">
+      <div class="tl-head"><div class="tl-company">{{ e.company }}</div>{% if e.start_date or e.end_date %}<div class="tl-date">{{ e.start_date }}{% if e.start_date and e.end_date %} – {% endif %}{{ e.end_date }}</div>{% endif %}</div>
+      <div class="tl-pos">{{ e.position }}{% if e.get('location') %} <span style="font-weight:400;opacity:.7;font-size:.75rem;">· {{ e.location }}</span>{% endif %}</div>
+      <div class="tl-desc">{{ e.description }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if data.education %}
+  <div class="card">
+    {{ section_label(L.education) }}
+    {% for e in data.education %}
+    <div class="edu-row">
+      <div><div class="edu-inst">{{ e.institution }}</div><div class="edu-deg">{{ e.degree }}{% if e.field %} in {{ e.field }}{% endif %}</div></div>
+      <div>{% if e.start_date or e.end_date %}<div class="edu-dates">{{ e.start_date }}{% if e.start_date and e.end_date %} – {% endif %}{{ e.end_date }}</div>{% endif %}{% if e.gpa %}<div class="edu-gpa">GPA {{ e.gpa }}</div>{% endif %}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if data.skills.technical or data.skills.soft %}
+  <div class="card">
+    {{ section_label(L.skills) }}
+    {% if data.skills.technical %}<div class="sg"><div class="sg-label">{{ L.tech }}</div><div class="tags">{% for s in data.skills.technical %}<span class="tag">{{ s }}</span>{% endfor %}</div></div>{% endif %}
+    {% if data.skills.soft %}<div class="sg"><div class="sg-label">{{ L.soft }}</div><div class="tags">{% for s in data.skills.soft %}<span class="tag">{{ s }}</span>{% endfor %}</div></div>{% endif %}
+  </div>
+  {% endif %}
+
+  {% if data.languages or data.certifications %}
+  <div class="two">
+    {% if data.languages %}
+    <div class="card">
+      {{ section_label(L.languages) }}
+      {% for l in data.languages %}<div class="lang-row"><span class="lang-name">{{ l.language }}</span><span class="lang-lvl">{{ l.level }}</span></div>{% endfor %}
+    </div>
+    {% endif %}
+    {% if data.certifications %}
+    <div class="card">
+      {{ section_label(L.certs) }}
+      {% for c in data.certifications %}<div class="cert-row"><div class="cert-name">{{ c.name }}</div><div class="cert-meta">{{ c.issuer }} · {{ c.year }}</div></div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preload" href="/static/bg.jpg" as="image">
+  <style>
+    html { background: #5a9e4a; }
+  </style>
+  <script>
+    // Apply wallpaper as soon as image is ready — no flash
+    var _bg = new Image();
+    _bg.src = '/static/bg.jpg';
+    _bg.onload = function() {
+      document.documentElement.style.backgroundImage = "url('/static/bg.jpg')";
+      document.documentElement.style.backgroundSize = "cover";
+      document.documentElement.style.backgroundPosition = "center";
+      document.documentElement.style.backgroundAttachment = "fixed";
+    };
+  </script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CVcraft — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f9f8f6;--ink:#1c1c1c;--acc:#2f6b4f;--gold:#c8a155;--muted:#8a8780;--border:#e4e0d8;--card:#fff;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:transparent;color:var(--ink);min-height:100vh;}
+  nav{background:rgba(15,15,15,.95);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100;}
+  .logo{display:flex;align-items:center;gap:.45rem;text-decoration:none;flex-shrink:0;}
+  .logo span{color:var(--gold);}
+  .wrap{max-width:860px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+  .page-title{font-family:'DM Sans',sans-serif;font-size:1.8rem;margin-bottom:.4rem;}
+  .page-sub{color:var(--muted);font-size:.88rem;margin-bottom:2.5rem;}
+  .flash{background:#edf7f0;border-left:3px solid var(--acc);color:#1e5437;padding:.7rem 2rem;font-size:.84rem;}
+
+  /* CV GRID */
+  .cv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;}
+
+  /* NEW CV CARD */
+  .card-new{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    border:2px dashed var(--border);border-radius:12px;
+    min-height:160px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:.5rem;
+    cursor:pointer;transition:all .2s;text-decoration:none;color:var(--muted);
+    padding:1.5rem;
+  }
+  .card-new:hover{border-color:var(--acc);color:var(--acc);background:rgba(47,107,79,.04);}
+  .card-new .plus{font-size:2rem;line-height:1;}
+  .card-new .label{font-size:.85rem;font-weight:600;}
+
+  /* CV CARD */
+  .cv-card{
+    background:rgba(255,255,255,.92);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:1px solid var(--border);border-radius:12px;
+    padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:.8rem;
+    transition:box-shadow .2s;
+  }
+  .cv-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);}
+  .cv-card-title{font-weight:700;font-size:1rem;color:var(--ink);}
+  .cv-card-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.8rem;align-items:center;}
+  .tpl-badge{
+    font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    padding:.15rem .5rem;border-radius:3px;
+    background:rgba(47,107,79,.1);color:var(--acc);
+  }
+  .cv-card-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:auto;}
+  .btn{
+    display:inline-flex;align-items:center;gap:.3rem;
+    padding:.32rem .8rem;border-radius:5px;
+    font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;
+    text-decoration:none;transition:all .15s;border:none;cursor:pointer;
+  }
+  .btn-green{background:var(--acc);color:#fff;}
+  .btn-green:hover{background:#255a41;}
+  .btn-outline{color:var(--ink);border:1px solid var(--border);background:none;}
+  .btn-outline:hover{border-color:#aaa;background:var(--bg);}
+  .btn-red{color:#c0392b;border:1px solid #f5c6c6;background:none;}
+  .btn-red:hover{background:#fdf0f0;}
+
+  /* SHARE LINK */
+  .share-box{
+    background:var(--bg);border:1px solid var(--border);border-radius:6px;
+    padding:.5rem .7rem;font-size:.72rem;color:var(--muted);
+    display:flex;align-items:center;gap:.5rem;word-break:break-all;
+  }
+  .share-box a{color:var(--acc);text-decoration:none;}
+  .share-box a:hover{text-decoration:underline;}
+
+  /* EMPTY STATE */
+  .empty-hint{text-align:center;color:var(--muted);font-size:.9rem;margin-top:3rem;}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo" style="display:flex;align-items:center;gap:.5rem;text-decoration:none;">
+    <svg width="26" height="26" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <rect width="16" height="16" fill="#3eaf3e"/>
+      <rect x="2" y="2" width="4" height="4" fill="#1a1a1a"/>
+      <rect x="10" y="2" width="4" height="4" fill="#1a1a1a"/>
+      <rect x="5" y="7" width="6" height="2" fill="#1a1a1a"/>
+      <rect x="5" y="9" width="2" height="3" fill="#1a1a1a"/>
+      <rect x="9" y="9" width="2" height="3" fill="#1a1a1a"/>
+      <rect x="4" y="12" width="3" height="2" fill="#1a1a1a"/>
+      <rect x="9" y="12" width="3" height="2" fill="#1a1a1a"/>
+    </svg>
+    <span style="font-family:'Press Start 2P',monospace;color:#fff;font-size:.68rem;letter-spacing:.01em;">cvcraft</span>
+  </a>
+</nav>
+
+{% with messages = get_flashed_messages() %}
+  {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+{% endwith %}
+
+<div class="wrap" style="display:flex;flex-direction:column;min-height:calc(100vh - 56px);">
+  <div class="page-title">My CVs</div>
+
+
+  {% if not cvs %}
+  <!-- EMPTY STATE — centered -->
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;min-height:60vh;">
+    <div style="text-align:center;">
+      <div style="font-size:3.5rem;margin-bottom:1rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2));">📄</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:1.7rem;color:var(--ink);margin-bottom:.6rem;">No CVs yet</div>
+      <div style="font-size:.9rem;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);margin-bottom:1.8rem;font-weight:500;">Create your first CV and download a professional PDF in minutes.</div>
+      <a href="/new" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--acc);color:#fff;padding:.75rem 2rem;border-radius:7px;font-size:.95rem;font-weight:600;text-decoration:none;">＋ Create my first CV</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="cv-grid">
+
+    <!-- NEW CV BUTTON -->
+    <a href="/new" class="card-new">
+      <div class="plus">＋</div>
+      <div class="label">Create new CV</div>
+    </a>
+
+    <!-- EXISTING CVs -->
+    {% for cv in cvs %}
+    <div class="cv-card">
+      <div class="cv-card-title">{{ cv.title or "Untitled CV" }}</div>
+      <div class="cv-card-meta">
+        <span class="tpl-badge">{{ cv.get("template","modern") }}</span>
+      </div>
+      <div class="cv-card-actions">
+        <a href="/cv/{{ cv.id }}" class="btn btn-green">👁 Preview</a>
+        <a href="/cv/{{ cv.id }}/edit" class="btn btn-outline">✏ Edit</a>
+        <a href="/cv/{{ cv.id }}/download" class="btn btn-outline">↓ PDF</a>
+        <a href="/cv/{{ cv.id }}/delete"
+           onclick="return confirm('Delete this CV?')"
+           class="btn btn-red">✕</a>
+      </div>
+      {% if cv.get("public") %}
+      <div class="share-box">
+        🔗 <a href="/share/{{ user_id }}/{{ cv.id }}" target="_blank">
+          Share link
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+  </div>
+
+  </div><!-- /cv-grid -->
+  {% endif %}
+</div>
+</body>
+</html>
