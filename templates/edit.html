@@ -221,10 +221,21 @@
           <div class="grid col2">
             <div class="field"><label>Company</label><input name="exp_company" value="{{ e.company }}" placeholder="Company name"></div>
             <div class="field"><label>Job Title</label><input name="exp_position" value="{{ e.position }}" placeholder="e.g. Senior Designer"></div>
-            <div class="field"><label>Location</label><input name="exp_location" value="{{ e.get('location','') }}" placeholder="e.g. Berlin, Remote"></div>
-            <div class="field"><label>Start</label><input name="exp_start" value="{{ e.start_date }}" placeholder="2022-01"></div>
-            <div class="field"><label>End</label><input name="exp_end" value="{{ e.end_date }}" placeholder="Present"></div>
-            <div class="field"><label>Location</label><input name="exp_location" value="{{ e.get('location','') }}" placeholder="e.g. Berlin, Remote"></div>
+            <div class="field"><label>City / Country</label><input name="exp_location" value="{{ e.get('location','') }}" placeholder="e.g. Berlin, Germany"></div>
+            <div class="field"><label>Work Type</label>
+              <select name="exp_worktype">
+                <option value="" {% if not e.get('worktype') %}selected{% endif %}>— Select —</option>
+                <option value="On-site" {% if e.get('worktype')=='On-site' %}selected{% endif %}>On-site</option>
+                <option value="Remote" {% if e.get('worktype')=='Remote' %}selected{% endif %}>Remote</option>
+                <option value="Hybrid" {% if e.get('worktype')=='Hybrid' %}selected{% endif %}>Hybrid</option>
+              </select>
+            </div>
+            <div class="field"><label>Start Date</label><input type="month" name="exp_start" value="{{ e.start_date }}"></div>
+            <div class="field"><label>End Date</label><input type="month" name="exp_end" value="{{ e.end_date }}">
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.72rem;margin-top:.3rem;cursor:pointer;font-weight:400;text-transform:none;letter-spacing:0;">
+                <input type="checkbox" name="exp_current_{{ loop.index }}" onchange="toggleCurrent(this,'exp_end_{{ loop.index }}')" {% if e.end_date=='Present' %}checked{% endif %}> Currently working here
+              </label>
+            </div>
             <div class="field span2"><label>Description</label><textarea name="exp_description">{{ e.description }}</textarea></div>
           </div>
         </div>
@@ -241,7 +252,17 @@
         <div class="dyn-item">
           <div class="dyn-head"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dyn-num">Degree {{ loop.index }}</span><button type="button" class="rm-btn" onclick="this.closest('.dyn-item').remove()">Remove</button></div>
           <div class="grid col2">
-            <div class="field span2"><label>School / University</label><input name="edu_institution" value="{{ e.institution }}" placeholder="e.g. MIT"></div>
+            <div class="field span2"><label>School / University</label>
+              <input type="text" name="edu_institution" value="{{ e.institution }}"
+                placeholder="Type to search or write your own..."
+                list="uni-list-{{ loop.index }}" autocomplete="off">
+              <datalist id="uni-list-{{ loop.index }}">
+                {% for u in ['MIT','Stanford University','Harvard University','University of Oxford','University of Cambridge','ETH Zurich','Imperial College London','UCL','University of Edinburgh','Technical University of Munich','Humboldt University Berlin','Free University of Berlin','RWTH Aachen','University of Amsterdam','Delft University of Technology','Sorbonne University','Sciences Po','HEC Paris','Politecnico di Milano','University of Barcelona','Complutense University of Madrid','University of Helsinki','KTH Royal Institute of Technology','Leiden University','University of Copenhagen','Charles University','Bogazici University','Middle East Technical University','Istanbul Technical University','Bilkent University','Koç University','Sabancı University','Baku State University','ADA University','Moscow State University','St. Petersburg State University','Tsinghua University','Peking University','University of Tokyo','Seoul National University','National University of Singapore','University of Melbourne','University of Toronto','McGill University','Yale University','Princeton University','Columbia University','University of Chicago','Caltech','Duke University','Johns Hopkins University','University of Michigan','UCLA','UC Berkeley'] %}
+                <option value="{{ u }}">
+                {% endfor %}
+              </datalist>
+              <span class="hint">Can't find yours? Just type it directly.</span>
+            </div>
             <div class="field"><label>Degree</label><input name="edu_degree" value="{{ e.degree }}" placeholder="Bachelor of Science"></div>
             <div class="field"><label>Field</label><input name="edu_field" value="{{ e.field }}" placeholder="Computer Science"></div>
             <div class="field"><label>Start</label><input name="edu_start" value="{{ e.start_date }}" placeholder="2018"></div>
@@ -392,15 +413,22 @@ function previewPhoto(input) {
 function addExp() {
   const n = document.querySelectorAll('#exp-list .dyn-item').length + 1;
   document.getElementById('exp-list').insertAdjacentHTML('beforeend', `
-    <div class="dyn-item">
+    <div class="dyn-item" draggable="true">
       <div class="dyn-head"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dyn-num">Position ${n}</span><button type="button" class="rm-btn" onclick="this.closest('.dyn-item').remove()">Remove</button></div>
       <div class="grid col2">
         <div class="field"><label>Company</label><input name="exp_company" placeholder="Company name"></div>
         <div class="field"><label>Job Title</label><input name="exp_position" placeholder="e.g. Senior Designer"></div>
-        <div class="field"><label>Location</label><input name="exp_location" placeholder="e.g. Berlin, Remote"></div>
-        <div class="field"><label>Start</label><input name="exp_start" placeholder="2022-01"></div>
-        <div class="field"><label>End</label><input name="exp_end" placeholder="Present"></div>
-        <div class="field"><label>Location</label><input name="exp_location" placeholder="e.g. Berlin, Remote"></div>
+        <div class="field"><label>City / Country</label><input name="exp_location" placeholder="e.g. Berlin, Germany"></div>
+        <div class="field"><label>Work Type</label>
+          <select name="exp_worktype">
+            <option value="">— Select —</option>
+            <option value="On-site">On-site</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div class="field"><label>Start Date</label><input type="month" name="exp_start"></div>
+        <div class="field"><label>End Date</label><input type="month" name="exp_end"></div>
         <div class="field span2"><label>Description</label><textarea name="exp_description" placeholder="Your responsibilities and achievements."></textarea></div>
       </div>
     </div>`);
@@ -412,11 +440,22 @@ function addEdu() {
     <div class="dyn-item">
       <div class="dyn-head"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dyn-num">Degree ${n}</span><button type="button" class="rm-btn" onclick="this.closest('.dyn-item').remove()">Remove</button></div>
       <div class="grid col2">
-        <div class="field span2"><label>School / University</label><input name="edu_institution" placeholder="e.g. MIT"></div>
+        <div class="field span2"><label>School / University</label>
+          <input type="text" name="edu_institution" placeholder="Type to search or write your own..." list="uni-new" autocomplete="off">
+          <datalist id="uni-new">
+            <option value="MIT"><option value="Stanford University"><option value="Harvard University">
+            <option value="University of Oxford"><option value="University of Cambridge">
+            <option value="ETH Zurich"><option value="Technical University of Munich">
+            <option value="Bogazici University"><option value="Middle East Technical University">
+            <option value="Istanbul Technical University"><option value="Bilkent University">
+            <option value="Koç University"><option value="ADA University">
+            <option value="UC Berkeley"><option value="UCLA"><option value="Columbia University">
+          </datalist>
+        </div>
         <div class="field"><label>Degree</label><input name="edu_degree" placeholder="Bachelor of Science"></div>
         <div class="field"><label>Field</label><input name="edu_field" placeholder="Computer Science"></div>
-        <div class="field"><label>Start</label><input name="edu_start" placeholder="2018"></div>
-        <div class="field"><label>End</label><input name="edu_end" placeholder="2022"></div>
+        <div class="field"><label>Start Date</label><input type="month" name="edu_start"></div>
+        <div class="field"><label>End Date</label><input type="month" name="edu_end"></div>
         <div class="field"><label>GPA</label><input name="edu_gpa" placeholder="3.8"></div>
       </div>
     </div>`);
