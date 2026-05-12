@@ -4,7 +4,48 @@
   <link rel="preload" href="/static/bg.jpg" as="image">
   <style>
     html { background: #5a9e4a; }
-  </style>
+  
+  /* ── CUSTOM DATE PICKER ───────────────────────────────────────────── */
+  .date-picker-wrap{position:relative;width:100%;}
+  .date-picker-input{
+    width:100%;padding:.52rem .78rem;
+    border:1.5px solid var(--border);border-radius:6px;
+    font-family:'DM Sans',sans-serif;font-size:.88rem;
+    color:var(--ink);background:var(--soft);
+    cursor:pointer;transition:border-color .18s;
+    caret-color:transparent;
+  }
+  .date-picker-input:focus{outline:none;border-color:var(--acc);}
+  .dp-popup{
+    display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:999;
+    background:#fff;border:1.5px solid var(--border);border-radius:10px;
+    box-shadow:0 8px 32px rgba(0,0,0,.15);padding:1rem;width:240px;
+  }
+  .dp-popup.open{display:block;}
+  .dp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;}
+  .dp-nav button{
+    background:none;border:none;cursor:pointer;
+    color:var(--ink);font-size:1.1rem;padding:.2rem .5rem;
+    border-radius:4px;transition:background .15s;
+  }
+  .dp-nav button:hover{background:var(--soft);}
+  .dp-year{font-weight:700;font-size:.95rem;color:var(--ink);}
+  .dp-months{display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem;}
+  .dp-month{
+    padding:.45rem .2rem;text-align:center;border-radius:6px;
+    font-size:.78rem;font-weight:500;cursor:pointer;
+    border:1.5px solid transparent;transition:all .15s;color:var(--ink);
+    background:none;
+  }
+  .dp-month:hover{background:var(--soft);border-color:var(--border);}
+  .dp-month.selected{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .dp-clear{
+    margin-top:.7rem;width:100%;padding:.35rem;
+    background:none;border:1px solid var(--border);border-radius:5px;
+    font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .15s;
+  }
+  .dp-clear:hover{background:var(--soft);}
+</style>
   <script>
     // Apply wallpaper as soon as image is ready — no flash
     var _bg = new Image();
@@ -230,10 +271,66 @@
                 <option value="Hybrid" {% if e.get('worktype')=='Hybrid' %}selected{% endif %}>Hybrid</option>
               </select>
             </div>
-            <div class="field"><label>Start Date</label><input type="month" name="exp_start" value="{{ e.start_date }}"></div>
-            <div class="field"><label>End Date</label><input type="month" name="exp_end" value="{{ e.end_date }}">
-              <label style="display:flex;align-items:center;gap:.4rem;font-size:.72rem;margin-top:.3rem;cursor:pointer;font-weight:400;text-transform:none;letter-spacing:0;">
-                <input type="checkbox" name="exp_current_{{ loop.index }}" onchange="toggleCurrent(this,'exp_end_{{ loop.index }}')" {% if e.end_date=='Present' %}checked{% endif %}> Currently working here
+            <div class="field"><label>Start Date</label><div class="date-picker-wrap">
+              <input type="hidden" name="exp_start" value="{{ e.start_date }}" class="dp-hidden">
+              <input type="text" class="date-picker-input" readonly
+                placeholder="Select month & year"
+                value="{{ e.start_date }}"
+                onclick="dpOpen(this)">
+              <div class="dp-popup">
+                <div class="dp-nav">
+                  <button type="button" onclick="dpYear(this,-1)">‹</button>
+                  <span class="dp-year">2024</span>
+                  <button type="button" onclick="dpYear(this,1)">›</button>
+                </div>
+                <div class="dp-months">
+                  <button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button>
+<button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button>
+<button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button>
+<button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button>
+<button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button>
+<button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button>
+<button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button>
+<button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button>
+<button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button>
+<button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button>
+<button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button>
+<button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button>
+                </div>
+                <button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button>
+              </div>
+            </div></div>
+            <div class="field"><label>End Date</label><div class="date-picker-wrap">
+              <input type="hidden" name="exp_end" value="{{ e.end_date }}" class="dp-hidden">
+              <input type="text" class="date-picker-input" readonly
+                placeholder="Select month & year"
+                value="{{ e.end_date }}"
+                onclick="dpOpen(this)">
+              <div class="dp-popup">
+                <div class="dp-nav">
+                  <button type="button" onclick="dpYear(this,-1)">‹</button>
+                  <span class="dp-year">2024</span>
+                  <button type="button" onclick="dpYear(this,1)">›</button>
+                </div>
+                <div class="dp-months">
+                  <button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button>
+<button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button>
+<button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button>
+<button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button>
+<button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button>
+<button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button>
+<button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button>
+<button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button>
+<button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button>
+<button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button>
+<button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button>
+<button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button>
+                </div>
+                <button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button>
+              </div>
+            </div>
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.72rem;margin-top:.4rem;cursor:pointer;font-weight:400;text-transform:none;letter-spacing:0;">
+                <input type="checkbox" onchange="dpSetPresent(this)"> Currently working here
               </label>
             </div>
             <div class="field span2"><label>Description</label><textarea name="exp_description">{{ e.description }}</textarea></div>
@@ -427,8 +524,9 @@ function addExp() {
             <option value="Hybrid">Hybrid</option>
           </select>
         </div>
-        <div class="field"><label>Start Date</label><input type="month" name="exp_start"></div>
-        <div class="field"><label>End Date</label><input type="month" name="exp_end"></div>
+        <div class="field"><label>Start Date</label><div class="date-picker-wrap"><input type="hidden" name="exp_start" class="dp-hidden"><input type="text" class="date-picker-input" readonly placeholder="Select month & year" onclick="dpOpen(this)"><div class="dp-popup"><div class="dp-nav"><button type="button" onclick="dpYear(this,-1)">‹</button><span class="dp-year">2024</span><button type="button" onclick="dpYear(this,1)">›</button></div><div class="dp-months"><button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button><button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button><button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button><button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button><button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button><button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button><button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button><button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button><button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button><button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button><button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button><button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button></div><button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button></div></div></div>
+        <div class="field"><label>End Date</label><div class="date-picker-wrap"><input type="hidden" name="exp_end" class="dp-hidden"><input type="text" class="date-picker-input" readonly placeholder="Select month & year" onclick="dpOpen(this)"><div class="dp-popup"><div class="dp-nav"><button type="button" onclick="dpYear(this,-1)">‹</button><span class="dp-year">2024</span><button type="button" onclick="dpYear(this,1)">›</button></div><div class="dp-months"><button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button><button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button><button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button><button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button><button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button><button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button><button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button><button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button><button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button><button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button><button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button><button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button></div><button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button></div></div>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.72rem;margin-top:.4rem;cursor:pointer;font-weight:400;text-transform:none;letter-spacing:0;"><input type="checkbox" onchange="dpSetPresent(this)"> Currently working here</label></div>
         <div class="field span2"><label>Description</label><textarea name="exp_description" placeholder="Your responsibilities and achievements."></textarea></div>
       </div>
     </div>`);
@@ -454,8 +552,8 @@ function addEdu() {
         </div>
         <div class="field"><label>Degree</label><input name="edu_degree" placeholder="Bachelor of Science"></div>
         <div class="field"><label>Field</label><input name="edu_field" placeholder="Computer Science"></div>
-        <div class="field"><label>Start Date</label><input type="month" name="edu_start"></div>
-        <div class="field"><label>End Date</label><input type="month" name="edu_end"></div>
+        <div class="field"><label>Start Date</label><div class="date-picker-wrap"><input type="hidden" name="edu_start" class="dp-hidden"><input type="text" class="date-picker-input" readonly placeholder="Select month & year" onclick="dpOpen(this)"><div class="dp-popup"><div class="dp-nav"><button type="button" onclick="dpYear(this,-1)">‹</button><span class="dp-year">2024</span><button type="button" onclick="dpYear(this,1)">›</button></div><div class="dp-months"><button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button><button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button><button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button><button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button><button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button><button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button><button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button><button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button><button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button><button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button><button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button><button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button></div><button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button></div></div></div>
+        <div class="field"><label>End Date</label><div class="date-picker-wrap"><input type="hidden" name="edu_end" class="dp-hidden"><input type="text" class="date-picker-input" readonly placeholder="Select month & year" onclick="dpOpen(this)"><div class="dp-popup"><div class="dp-nav"><button type="button" onclick="dpYear(this,-1)">‹</button><span class="dp-year">2024</span><button type="button" onclick="dpYear(this,1)">›</button></div><div class="dp-months"><button type="button" class="dp-month" data-m="01" onclick="dpPick(this)">Jan</button><button type="button" class="dp-month" data-m="02" onclick="dpPick(this)">Feb</button><button type="button" class="dp-month" data-m="03" onclick="dpPick(this)">Mar</button><button type="button" class="dp-month" data-m="04" onclick="dpPick(this)">Apr</button><button type="button" class="dp-month" data-m="05" onclick="dpPick(this)">May</button><button type="button" class="dp-month" data-m="06" onclick="dpPick(this)">Jun</button><button type="button" class="dp-month" data-m="07" onclick="dpPick(this)">Jul</button><button type="button" class="dp-month" data-m="08" onclick="dpPick(this)">Aug</button><button type="button" class="dp-month" data-m="09" onclick="dpPick(this)">Sep</button><button type="button" class="dp-month" data-m="10" onclick="dpPick(this)">Oct</button><button type="button" class="dp-month" data-m="11" onclick="dpPick(this)">Nov</button><button type="button" class="dp-month" data-m="12" onclick="dpPick(this)">Dec</button></div><button type="button" class="dp-clear" onclick="dpClear(this)">Clear</button></div></div></div>
         <div class="field"><label>GPA</label><input name="edu_gpa" placeholder="3.8"></div>
       </div>
     </div>`);
@@ -498,6 +596,107 @@ function addCert() {
     </div>`);
 
 }
+
+
+// ── CUSTOM DATE PICKER ────────────────────────────────────────────────────────
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function dpOpen(input) {
+  // Close all other open pickers
+  document.querySelectorAll('.dp-popup.open').forEach(p => {
+    if (p !== input.nextElementSibling) p.classList.remove('open');
+  });
+
+  const popup  = input.nextElementSibling;
+  const hidden = input.previousElementSibling;
+  const val    = hidden.value; // e.g. "2022-03"
+
+  // Set current year
+  let year = new Date().getFullYear();
+  let month = null;
+  if (val && val !== 'Present' && val.includes('-')) {
+    const parts = val.split('-');
+    year  = parseInt(parts[0]);
+    month = parts[1];
+  }
+  popup.querySelector('.dp-year').textContent = year;
+
+  // Mark selected month
+  popup.querySelectorAll('.dp-month').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.m === month);
+  });
+
+  popup.classList.toggle('open');
+}
+
+function dpYear(btn, delta) {
+  const yearEl = btn.closest('.dp-popup').querySelector('.dp-year');
+  yearEl.textContent = parseInt(yearEl.textContent) + delta;
+}
+
+function dpPick(btn) {
+  const popup  = btn.closest('.dp-popup');
+  const wrap   = popup.closest('.date-picker-wrap');
+  const hidden = wrap.querySelector('.dp-hidden');
+  const display = wrap.querySelector('.date-picker-input');
+  const year   = popup.querySelector('.dp-year').textContent;
+  const month  = btn.dataset.m;
+
+  // Mark selected
+  popup.querySelectorAll('.dp-month').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // Save value
+  const val = year + '-' + month;
+  hidden.value = val;
+  display.value = MONTHS[parseInt(month)-1] + ' ' + year;
+
+  popup.classList.remove('open');
+}
+
+function dpClear(btn) {
+  const wrap    = btn.closest('.date-picker-wrap');
+  const hidden  = wrap.querySelector('.dp-hidden');
+  const display = wrap.querySelector('.date-picker-input');
+  hidden.value  = '';
+  display.value = '';
+  btn.closest('.dp-popup').classList.remove('open');
+}
+
+function dpSetPresent(checkbox) {
+  const wrap    = checkbox.closest('.field').querySelector('.date-picker-wrap');
+  const hidden  = wrap.querySelector('.dp-hidden');
+  const display = wrap.querySelector('.date-picker-input');
+  if (checkbox.checked) {
+    hidden.value  = 'Present';
+    display.value = 'Present';
+  } else {
+    hidden.value  = '';
+    display.value = '';
+  }
+}
+
+// Init existing pickers — set display value from hidden value
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.date-picker-wrap').forEach(wrap => {
+    const hidden  = wrap.querySelector('.dp-hidden');
+    const display = wrap.querySelector('.date-picker-input');
+    const val = hidden.value;
+    if (val === 'Present') {
+      display.value = 'Present';
+    } else if (val && val.includes('-')) {
+      const [y, m] = val.split('-');
+      display.value = MONTHS[parseInt(m)-1] + ' ' + y;
+    }
+  });
+});
+
+// Close picker when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.date-picker-wrap')) {
+    document.querySelectorAll('.dp-popup.open').forEach(p => p.classList.remove('open'));
+  }
+});
 
 // ── DRAG AND DROP ─────────────────────────────────────────────────────────────
 function initDrag(listId) {
